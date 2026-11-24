@@ -106,3 +106,72 @@ VibeåŠ©æ‰‹ å¯¹ Cursor çš„æ¿€æ´»æœºåˆ¶åˆ†ä¸¤å±‚ï¼š
 | **ç½‘ç»œä¾èµ–** | AI è¯·æ±‚æœ€ç»ˆé€šè¿‡æœ¬æœº `10.40.111.234:8634` è½¬å‘åˆ°æœ¬æœº api-workerï¼ˆ`127.0.0.1:9182`ï¼‰ï¼Œå†èµ° VibeåŠ©æ‰‹ æ¸ é“ã€‚æœ¬æœºå¿…é¡»ä¿æŒè”ç½‘ä¸”è½¬å‘å™¨åœ¨è¿è¡Œã€‚ |
 | **å‡­æ®ä¿å¯†** | `.augpro.json` å’Œ `.auth` åŒ…å«è´¦å·å‡­æ®ï¼Œæ³„éœ²åä»–äººå¯æ¶ˆè€—ä½ çš„é¢åº¦ã€‚ä¸è¦ä¸Šä¼ åˆ° GitHubã€ä¸è¦å‘ç»™ä¸å¯ä¿¡çš„äººã€‚ |
 | **æ›´æ–°å¤±æ•ˆé£é™©** | Cursor è‡ªåŠ¨å‡çº§ä¼šè¦†ç›–è¢«è¡¥ä¸çš„ JS æ–‡ä»¶ï¼Œæ¿€æ´»ä¼šå¤±æ•ˆã€‚å»ºè®®åœ¨ TARGET ä¸Šå…³é—­ Cursor è‡ªåŠ¨æ›´æ–°ï¼Œæˆ–å‡çº§åé‡æ–°å¤åˆ¶è¡¥ä¸ã€‚ |
+
+# 04. ×Ô¶¯»¯½Å±¾
+
+## `target/update-from-local.ps1`
+
+ÔÚ**±¾»úÒÑÓÃ VibeÖúÊÖ ¼¤»î Cursor ºó**ÔËĞĞ¡£½Å±¾Ê¹ÓÃÏà¶ÔÓÚ½Å±¾Ä¿Â¼µÄÂ·¾¶£¬°Ñµ±Ç° Cursor °æ±¾µÄ¼¤»îÎÄ¼şºÍ²¹¶¡Ë¢ĞÂµ½ `target/`£º
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\target\update-from-local.ps1
+```
+
+Ä¬ÈÏ²¶»ñ£º
+- µ±Ç° Cursor °æ±¾£¨Ğ´Èë `target/cursor-version.txt`£¬Ä¿Ç°Îª `3.31.15`£©£»
+- Ã÷ÎÄ `target/activation/augpro.json`£¨½Å±¾²¿ÊğÊ±»áÖØĞÂ XOR 37 Ğ´ÈëÄ¿±êÓÃ»§µÄ `.augpro.json`£©£»
+- `target/activation/api-worker/.auth`£»
+- µ±Ç° Cursor µÄ `settings.json`£»
+- 10 ¸ö Cursor ²¹¶¡/±¸·İ JS ÎÄ¼ş¡£
+
+½Å±¾ÄÚÄ¬ÈÏ°ÑÄ¿±ê API µØÖ·ÉèÖÃÎª£º`http://10.40.111.234:8634`¡£ÈçµØÖ·¸Ä±ä£º
+
+```powershell
+.\target\update-from-local.ps1 -BridgeUrl 'http://ĞÂµÄµØÖ·:8634'
+```
+
+## `target/deploy-to-target.ps1`
+
+°ÑÕû¸ö `target` ÎÄ¼ş¼Ğ¸´ÖÆµ½ TARGET£¬È»ºóÔÚ TARGET µÄ PowerShell ÖĞÔËĞĞ£º
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\target\deploy-to-target.ps1
+```
+
+½Å±¾£º
+1. ¼ì²é TARGET Cursor °æ±¾Óë `cursor-version.txt`£»
+2. ±¸·İ TARGET Ô­ÎÄ¼şµ½ `resources\app\.claudecodebridge-backup`£»
+3. ¸²¸Ç²¹¶¡ÎÄ¼ş£»
+4. ½«Ã÷ÎÄ `augpro.json` ÖØĞÂ XOR 37£¬Ğ´Èë TARGET ÓÃ»§µÄ `.augpro.json`£»
+5. Ğ´Èë `api-worker\.auth`£»
+6. ºÏ²¢ `disableHttp2` / `disableHttp1SSE` ÉèÖÃ£¬²»¸²¸ÇÆäËûÓÃ»§ÉèÖÃ¡£
+
+Èô°æ±¾È·Êµ²»Í¬ÇÒÄãÈ·ÈÏ²¹¶¡¼æÈİ£¬¿ÉÊ¹ÓÃ£º
+
+```powershell
+.\target\deploy-to-target.ps1 -SkipVersionCheck
+```
+
+½Å±¾²»»áÌæ TARGET Æô¶¯ VibeÖúÊÖ£»±¾»úµÄ VibeÖúÊÖ api-worker ºÍ `8634` forwarder ±ØĞë±£³ÖÔËĞĞ¡£
+
+## °æ±¾¸üĞÂÁ÷³Ì
+
+1. ±¾»ú Cursor ¸üĞÂ²¢ÖØĞÂµã»÷ VibeÖúÊÖ µÄ¡°¼¤»î¡±£»
+2. ÍêÈ«ÍË³ö Cursor£»
+3. ±¾»úÔËĞĞ `update-from-local.ps1`£»
+4. ¼ì²é `target/cursor-version.txt` ºÍ `target/activation/augpro.json`£»
+5. Í¨¹ıÀëÏß½éÖÊ/¾ÖÓòÍø¸´ÖÆ `target` µ½ TARGET£»
+6. TARGET ÔËĞĞ `deploy-to-target.ps1`¡£
+
+## 05. 8633 ÊÇ·ñ»¹ĞèÒª
+
+**Ö»×ö VibeÖúÊÖ Cursor ¼¤»î×ª½ÓÊ±£¬²»ĞèÒª 8633¡£**
+
+- `8634`£ºTARGET Cursor ÒÑ´ò²¹¶¡ºóµÄ AI/API ÇëÇó ¡ú ±¾»ú `127.0.0.1:9182` api-worker£»±ØĞëÔËĞĞ¡£
+- `8633`£º½öÓÃÓÚÈÃ TARGET Cursor ·ÃÎÊ `cursor.com`¡¢µÇÂ¼¡¢¸üĞÂµÈ¹ÙÍøÁ÷Á¿µÄ HTTP CONNECT ÕıÏò´úÀí£»²»ÊÇ¼¤»î API µÄ±ØĞè¶Ë¿Ú¡£
+
+Èç¹û TARGET Cursor ÒÑ¾­ÓĞ¿ÉÓÃµÄ¹ÙÍøÍøÂç£¬¹Ø±Õ 8633 ¼´¿É¡£Èô TARGET ÍêÈ«²»ÄÜ·ÃÎÊ¹ÙÍøÇÒ»¹ÒªµÇÂ¼/¸üĞÂ£¬²ÅÁíĞĞÆôÓÃ 8633£»¼¤»î²¹¶¡±¾Éí²»»áÌæ TARGET Ìá¹©¹«Íø³ö¿Ú¡£
+
+## 06. °²È«
+
+`target/activation/` Óë `target/patches/` ÒÑ±» `.gitignore` ÅÅ³ı¡£²»ÒªÇ¿ÖÆ `git add -f` ËüÃÇ£¬Ò²²»Òª°Ñ `augpro.json`¡¢`.auth` »ò²¹¶¡ÉÏ´«µ½ GitHub¡£`augpro.json` ÊÇÃ÷ÎÄÃô¸ĞÆ¾¾İ£¬½öÓÃÓÚ±¾µØÀëÏß¸´ÖÆ¡£
