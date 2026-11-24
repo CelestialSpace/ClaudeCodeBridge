@@ -32,7 +32,10 @@ if ($plain.API_WORKER_URL -ne 'http://10.40.111.234:8634') { throw 'augpro.json 
 # Back up the TARGET's existing destination files before replacing them.
 $backupRoot = Join-Path $resourceRoot '.claudecodebridge-backup'
 $files = Get-ChildItem -LiteralPath $patchRoot -File -Recurse
+# Only the patched files themselves must exist. `.bak` files are created by Vibe助手
+# when it patches the source machine; a clean TARGET won't have them yet.
 foreach ($file in $files) {
+    if ($file.Name -like '*.bak') { continue }
     $relative = $file.FullName.Substring($patchRoot.Length).TrimStart('\','/')
     $destination = Join-Path $resourceRoot $relative
     if (-not (Test-Path -LiteralPath $destination -PathType Leaf)) { throw "Patch destination missing in this Cursor version: $relative" }
@@ -41,6 +44,7 @@ New-Item -ItemType Directory -Force -Path $backupRoot | Out-Null
 foreach ($file in $files) {
     $relative = $file.FullName.Substring($patchRoot.Length).TrimStart('\','/')
     $destination = Join-Path $resourceRoot $relative
+    if (-not (Test-Path -LiteralPath $destination -PathType Leaf)) { continue }
     $backup = Join-Path $backupRoot $relative
     if (-not (Test-Path -LiteralPath $backup)) {
         New-Item -ItemType Directory -Force -Path (Split-Path $backup -Parent) | Out-Null

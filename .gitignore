@@ -19,3 +19,6 @@ node_modules/
 # Contains tokens and patched program files; copy offline to TARGET only
 target/activation/
 target/patches/
+
+target/cursor-version.txt
+target.7z
