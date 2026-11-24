@@ -1,0 +1,16 @@
+# transient logs
+debug.log
+_scratch/debug.log
+
+# OS
+Thumbs.db
+.DS_Store
+
+# scratch working area (reverse-engineering artifacts, large third-party code)
+_scratch/app-extract/
+_scratch/node_modules/
+_scratch/state_copy*.vscdb
+_scratch/*.tmp
+
+# Node
+node_modules/
