@@ -56,11 +56,11 @@ foreach ($file in $files) {
 }
 
 # Install per-user activation material. The API worker remains on the source PC.
-$home = $env:USERPROFILE
+$userHome = $env:USERPROFILE
 $obfuscated = [System.Text.Encoding]::UTF8.GetBytes(($plain | ConvertTo-Json -Compress -Depth 10))
 for ($i=0; $i -lt $obfuscated.Length; $i++) { $obfuscated[$i] = $obfuscated[$i] -bxor 37 }
-[System.IO.File]::WriteAllBytes((Join-Path $home '.augpro.json'), $obfuscated)
-$authDir = Join-Path $home 'api-worker'
+[System.IO.File]::WriteAllBytes((Join-Path $userHome '.augpro.json'), $obfuscated)
+$authDir = Join-Path $userHome 'api-worker'
 New-Item -ItemType Directory -Force -Path $authDir | Out-Null
 Copy-Item -LiteralPath $authFile -Destination (Join-Path $authDir '.auth') -Force
 
@@ -72,6 +72,6 @@ $sourceSettings = Get-Content $settingsFile -Raw | ConvertFrom-Json -AsHashtable
 foreach ($key in @('cursor.general.disableHttp2','cursor.general.disableHttp1SSE')) { if ($sourceSettings.ContainsKey($key)) { $current[$key] = $sourceSettings[$key] } }
 $current | ConvertTo-Json -Depth 100 | Set-Content -LiteralPath $settingsPath -Encoding utf8
 
-Write-Host "Deployed Vibe助手 activation files to $home"
+Write-Host "Deployed Vibe助手 activation files to $userHome"
 Write-Host "Cursor version: $version; API bridge: $($plain.API_WORKER_URL)"
 Write-Host 'Restart Cursor. Ensure the source PC forwarder is listening on port 8634.'

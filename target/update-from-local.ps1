@@ -7,9 +7,9 @@ param(
 $ErrorActionPreference = 'Stop'
 $root = $PSScriptRoot
 $resourceRoot = Join-Path $CursorInstallPath 'resources\app'
-$home = $env:USERPROFILE
-$augproPath = Join-Path $home '.augpro.json'
-$authPath = Join-Path $home 'api-worker\.auth'
+$userHome = $env:USERPROFILE
+$augproPath = Join-Path $userHome '.augpro.json'
+$authPath = Join-Path $userHome 'api-worker\.auth'
 $settingsPath = Join-Path $env:APPDATA 'Cursor\User\settings.json'
 
 if (-not (Test-Path $augproPath -PathType Leaf)) { throw "Missing local activation file: $augproPath. Activate Cursor with Vibe助手 first." }
