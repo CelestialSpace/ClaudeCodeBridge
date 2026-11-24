@@ -12,9 +12,16 @@ $augproPath = Join-Path $userHome '.augpro.json'
 $authPath = Join-Path $userHome 'api-worker\.auth'
 $settingsPath = Join-Path $env:APPDATA 'Cursor\User\settings.json'
 
-if (-not (Test-Path $augproPath -PathType Leaf)) { throw "Missing local activation file: $augproPath. Activate Cursor with Vibe助手 first." }
+# This script is intentionally SOURCE-machine only. On TARGET, use deploy-to-target.ps1 instead.
+if (-not (Test-Path $augproPath -PathType Leaf)) {
+    $packageFile = Join-Path $root 'activation\augpro.json'
+    if (Test-Path $packageFile) {
+        throw "This is a TARGET deployment package, not the source machine. Run .\deploy-to-target.ps1 on this machine; update-from-local.ps1 must run on the machine where Vibe助手 has activated Cursor."
+    }
+    throw "Missing local activation file: $augproPath. Activate Cursor with Vibe助手 first."
+}
 if (-not (Test-Path $authPath -PathType Leaf)) { throw "Missing worker auth file: $authPath" }
-if (-not (Test-Path (Join-Path $resourceRoot 'package.json') -PathType Leaf)) { throw "Cursor app not found: $resourceRoot" }
+if (-not (Test-Path (Join-Path $resourceRoot 'package.json') -PathType Leaf)) { throw "Cursor app not found: $resourceRoot. Use -CursorInstallPath if needed." }
 
 $bytes = [System.IO.File]::ReadAllBytes($augproPath)
 for ($i=0; $i -lt $bytes.Length; $i++) { $bytes[$i] = $bytes[$i] -bxor 37 }
