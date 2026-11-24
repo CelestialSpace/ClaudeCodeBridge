@@ -69,10 +69,17 @@ New-Item -ItemType Directory -Force -Path $authDir | Out-Null
 Copy-Item -LiteralPath $authFile -Destination (Join-Path $authDir '.auth') -Force
 
 # Merge only the network compatibility settings; preserve the TARGET user's other settings.
+# PowerShell 5.1 on Windows does not support ConvertFrom-Json -AsHashtable, so build hashtables manually.
 $settingsPath = Join-Path $env:APPDATA 'Cursor\User\settings.json'
 New-Item -ItemType Directory -Force -Path (Split-Path $settingsPath -Parent) | Out-Null
-$current = if (Test-Path $settingsPath) { Get-Content $settingsPath -Raw | ConvertFrom-Json -AsHashtable } else { @{} }
-$sourceSettings = Get-Content $settingsFile -Raw | ConvertFrom-Json -AsHashtable
+$current = if (Test-Path $settingsPath) { 
+    $tmp = Get-Content $settingsPath -Raw | ConvertFrom-Json
+    $h = @{}
+    $tmp.PSObject.Properties | ForEach-Object { $h[$_.Name] = $_.Value }
+    $h
+} else { @{} }
+$sourceSettings = @{}
+Get-Content $settingsFile -Raw | ConvertFrom-Json | ForEach-Object { $_.PSObject.Properties | ForEach-Object { $sourceSettings[$_.Name] = $_.Value } }
 foreach ($key in @('cursor.general.disableHttp2','cursor.general.disableHttp1SSE')) { if ($sourceSettings.ContainsKey($key)) { $current[$key] = $sourceSettings[$key] } }
 $current | ConvertTo-Json -Depth 100 | Set-Content -LiteralPath $settingsPath -Encoding utf8
 
