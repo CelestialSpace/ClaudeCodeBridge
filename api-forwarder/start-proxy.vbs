@@ -5,9 +5,6 @@ Set fso = CreateObject("Scripting.FileSystemObject")
 Set sh = CreateObject("WScript.Shell")
 base = fso.GetParentFolderName(WScript.ScriptFullName)
 Set env = sh.Environment("PROCESS")
-env("PROXY_PORT") = "8633"
-env("PROXY_BIND") = "0.0.0.0"
-env("PROXY_ALLOW") = "127.0.0.1,::1,10.40.62.6"
 
 If fso.FileExists(base & "\node.exe") Then
     nodeExe = base & "\node.exe"

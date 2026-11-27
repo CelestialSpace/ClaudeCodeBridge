@@ -5,7 +5,6 @@ Set fso = CreateObject("Scripting.FileSystemObject")
 Set sh = CreateObject("WScript.Shell")
 base = fso.GetParentFolderName(WScript.ScriptFullName)
 Set env = sh.Environment("PROCESS")
-env("LISTEN_PORT") = "8634"
 
 If fso.FileExists(base & "\node.exe") Then
     nodeExe = base & "\node.exe"

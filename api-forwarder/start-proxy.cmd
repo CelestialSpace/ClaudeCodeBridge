@@ -2,9 +2,6 @@
 setlocal
 title VIBE Local Unified Proxy 0.0.0.0:8633 (HTTP CONNECT + SOCKS5)
 cd /d "%~dp0"
-set PROXY_PORT=8633
-set PROXY_BIND=0.0.0.0
-set PROXY_ALLOW=127.0.0.1,::1,10.40.62.6
 
 rem 1) portable node.exe next to this script
 if exist "%~dp0node.exe" (

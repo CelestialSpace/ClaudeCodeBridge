@@ -2,7 +2,6 @@
 setlocal
 title VIBE API Forwarder 0.0.0.0:8634 to 127.0.0.1:9182
 cd /d "%~dp0"
-set LISTEN_PORT=8634
 
 rem 1) portable node.exe next to this script
 if exist "%~dp0node.exe" (

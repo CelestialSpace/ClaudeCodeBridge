@@ -13,16 +13,16 @@
 const net = require('net');
 const http = require('http');
 const { URL } = require('url');
+const cfg = require('./config');
 
-const LISTEN_HOST = process.env.PROXY_BIND || '0.0.0.0';
-const LISTEN_PORT = Number(process.env.PROXY_PORT || 8633);
-const ALLOW_IPS = (process.env.PROXY_ALLOW || '127.0.0.1,::1,10.40.62.6')
-  .split(',')
-  .map((s) => s.trim())
-  .filter(Boolean);
+const LISTEN_HOST = cfg.proxy.listenHost;
+const LISTEN_PORT = cfg.proxy.listenPort;
+const ALLOW_IPS = cfg.proxy.allowIps;
 
 const ts = () => new Date().toISOString().replace('T', ' ').replace('Z', '');
-const log = (...a) => console.log(`[${ts()}]`, ...a);
+const log = (...a) => {
+  if (cfg.log.enabled) console.log(`[${ts()}]`, ...a);
+};
 
 let connId = 0;
 let active = 0;

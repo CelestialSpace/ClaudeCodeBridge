@@ -1,13 +1,17 @@
 // api-worker LAN forwarder (userspace, no admin required for non-privileged port)
-// 8634 命中既有防火墙放行规则 "Net ManagementV V3 TCP"（任意程序入站）
+// 读取同目录 config.ini：[forwarder] 段配置监听地址与上游 api-worker 地址。
 const net = require('net');
+const cfg = require('./config');
 
-const LISTEN_PORT = Number(process.env.LISTEN_PORT || 8634);
-const TARGET_HOST = '127.0.0.1';
-const TARGET_PORT = 9182;
+const LISTEN_HOST = cfg.forwarder.listenHost;
+const LISTEN_PORT = cfg.forwarder.listenPort;
+const UPSTREAM_HOST = cfg.forwarder.upstreamHost;
+const UPSTREAM_PORT = cfg.forwarder.upstreamPort;
 
 const timestamp = () => new Date().toISOString().replace('T', ' ').replace('Z', '');
-const log = (...args) => console.log(`[${timestamp()}]`, ...args);
+const log = (...args) => {
+  if (cfg.log.enabled) console.log(`[${timestamp()}]`, ...args);
+};
 let connectionId = 0;
 let activeConnections = 0;
 
@@ -17,9 +21,9 @@ const server = net.createServer((client) => {
   activeConnections++;
   log(`#${id} CONNECT ${remote} (active=${activeConnections})`);
 
-  const upstream = net.createConnection({ host: TARGET_HOST, port: TARGET_PORT });
+  const upstream = net.createConnection({ host: UPSTREAM_HOST, port: UPSTREAM_PORT });
   upstream.on('connect', () => {
-    log(`#${id} UPSTREAM connected -> ${TARGET_HOST}:${TARGET_PORT}`);
+    log(`#${id} UPSTREAM connected -> ${UPSTREAM_HOST}:${UPSTREAM_PORT}`);
     client.pipe(upstream);
     upstream.pipe(client);
   });
@@ -38,11 +42,12 @@ const server = net.createServer((client) => {
 });
 
 server.on('listening', () => {
-  log(`api-worker forwarder listening on 0.0.0.0:${LISTEN_PORT} -> ${TARGET_HOST}:${TARGET_PORT}`);
+  log(`config: ${cfg.path} (${cfg.found ? 'loaded' : 'not found, using defaults'})`);
+  log(`api-worker forwarder listening on ${LISTEN_HOST}:${LISTEN_PORT} -> ${UPSTREAM_HOST}:${UPSTREAM_PORT}`);
   log('Press Ctrl+C to stop. Connection metadata only; request bodies are not logged.');
 });
 server.on('error', (err) => {
   log('FORWARDER ERROR', err.code || '', err.message);
   process.exitCode = 1;
 });
-server.listen(LISTEN_PORT, '0.0.0.0');
+server.listen(LISTEN_PORT, LISTEN_HOST);
